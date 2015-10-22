@@ -15,7 +15,7 @@ node_count() ->
         _ ->
             case metadata_get() of
                 {ok, Data} ->
-                    jsxd:get([<<"eqc">>, <<"num_servers">>], Data);
+                    jsxd:get([<<"eqc">>, <<"nodes">>], Data);
                 E ->
                     E
             end
