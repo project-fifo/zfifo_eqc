@@ -26,7 +26,7 @@ get_nodes() ->
         true ->
             {ok, [atom_to_binary(node(), utf8)]};
         _ ->
-            case metadata_get() of
+            case stack_get() of
                 {ok, Data} ->
                     jsxd:get([<<"eqc">>, <<"nodes">>], Data);
                 E ->
@@ -62,6 +62,9 @@ wait_for_nodes(N) ->
     end.
 
 metadata_get() ->
+    exec(#{action => <<"metadata-get">>}).
+
+stack_get() ->
     exec(#{action => <<"stack-get">>}).
 stack_set(Data) ->
     exec(#{action => <<"stack-set">>,  data => Data}).
