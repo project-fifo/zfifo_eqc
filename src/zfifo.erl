@@ -46,6 +46,14 @@ register(V) ->
         true ->
             ok;
         _ ->
+            case node() of
+                'nonode@nohost' ->
+                    os:cmd("epmd -daemon"),
+                    Node = mk_nodename(),
+                    net_kernel:start([Node]);
+                _  ->
+                    ok
+            end,
             Data = maps:put(node(), V, #{}),
             stack_set(#{eqc => #{nodes => Data}})
     end.
@@ -88,3 +96,22 @@ wait_for_result(Port, Acc) ->
         {Port, {data, Data}} ->
             wait_for_result(Port, <<Acc/binary, Data/binary>>)
     end.
+get_name() ->
+    case is_local() of
+        true ->
+            {ok, <<"test">>};
+        _ ->
+            case metadata_get() of
+                {ok, Data} ->
+                    jsxd:get([<<"eqc">>, <<"name">>],  Data);
+                E ->
+                    E
+            end
+    end.
+
+mk_nodename() ->
+    {ok, Name} = get_name(),
+    {ok, NICS} = inet:getifaddrs(),
+    Net0 = proplists:get_value("net0", NICS),
+    {A, B, C, D} = proplists:get_value(addr, Net0),
+    list_to_atom(lists:flatten(io_lib:format("~s@~p.~p.~p.~p", [Name, A, B, C, D]))).
