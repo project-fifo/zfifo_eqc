@@ -72,7 +72,7 @@ is_local() ->
 exec(Payload) ->
     JSON = jsx:encode(Payload),
     Spawn = {spawn_executable, ?UTIL},
-    Opts = [{args, JSON}, use_stdio, exit_status, binary, stderr_to_stdout],
+    Opts = [{args, [JSON]}, use_stdio, exit_status, binary, stderr_to_stdout],
     Port = open_port(Spawn, Opts),
     wait_for_result(Port, <<>>).
 
